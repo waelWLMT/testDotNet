@@ -62,7 +62,16 @@ public class UnitTestFormatter
     public void TestFormatter3()
     {
         //Champ conditionné sur l'état
-        //... à compléter
+        
+        var formatter = Formatter.GetFormatter(@"{""ConditionalFields"":[""Active;4;2;1""]}");
+        string result = formatter.FormatAlert(Alerts[0]);
+        Assert.AreEqual("Active", result);        
+
+        result = formatter.FormatAlert(Alerts[1]);
+        string expected = "South";
+
+        Assert.AreEqual(expected, result);
+
     }
 
 }

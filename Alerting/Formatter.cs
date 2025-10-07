@@ -15,8 +15,8 @@ public class Formatter
     public string FormatAlert(Alert alert)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendJoin(';', ConditionalFields.Select(
-            cf => alert.GetFieldValue(cf.GetField(alert))));
+        var listOfFields = ConditionalFields.Select(cf => alert.GetFieldValue(cf.GetField(alert)));
+        sb.AppendJoin(';', listOfFields);
 
         return sb.ToString();
     }
