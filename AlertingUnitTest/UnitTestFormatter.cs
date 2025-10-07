@@ -1,3 +1,4 @@
+using System;
 using Alerting;
 
 namespace AlertingUnitTest;
@@ -73,5 +74,21 @@ public class UnitTestFormatter
         Assert.AreEqual(expected, result);
 
     }
+
+    [TestMethod]
+    public void TestFormatter4()
+    {
+        //Deux champs conditionnés sur le status Active
+        Formatter formatter = Formatter.GetFormatter(@"{""ConditionalFields"":[""Active;4;2;1"",""Active;1;0;1""]}");
+
+        string result = formatter.FormatAlert(Alerts[0]);
+        Console.WriteLine(result);
+        Assert.AreEqual("Active;Water tank overflow", result);
+
+        result = formatter.FormatAlert(Alerts[1]);
+        Console.WriteLine(result);
+        Assert.AreEqual("South;BATTERY_DOWN_00013_SOUTH", result);
+    }
+
 
 }

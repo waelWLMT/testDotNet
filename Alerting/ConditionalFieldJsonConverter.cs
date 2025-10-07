@@ -12,40 +12,49 @@ public class ConditionalFieldJsonConverter : JsonConverter<ConditionalField>
     {
         string[] arr = reader.GetString().Split(";");
 
-        var cf = new ConditionalField()
-        {
-            FieldIfTrue = Enum.Parse<Field>(arr[1]),
-            FieldIfFalse = Enum.Parse<Field>(arr[2])
-        };
 
-        cf.CondionalCreteria =
-            arr.Length == 4 && arr[3] == "1"
+        var condionalCreteria = arr.Length == 4 && arr[3] == "1"
             ? CondionalCreteria.Status
             : CondionalCreteria.Category;
 
-        if (cf.CondionalCreteria == CondionalCreteria.Category)
-            cf.ExpectedCategory = arr[0];
+       if(condionalCreteria == CondionalCreteria.Category)
+        {
+            return new CategoryConditionalField()
+            {
+                FieldIfTrue = Enum.Parse<Field>(arr[1]),
+                FieldIfFalse = Enum.Parse<Field>(arr[2]),
+                ExpectedCategory = arr[0]
+            };
+        }
         else
-            cf.ExpectedStatus = arr[0];
-
-        return cf;
+        {
+            return new StatusConditionalField()
+            {
+                FieldIfTrue = Enum.Parse<Field>(arr[1]),
+                FieldIfFalse = Enum.Parse<Field>(arr[2]),
+                ExpectedStatus = arr[0]
+            };
+        }       
 
     }
 
     public override void Write(Utf8JsonWriter writer, ConditionalField cf, JsonSerializerOptions options)
     {
-        if (cf.CondionalCreteria == CondionalCreteria.Category)
+        if(cf is CategoryConditionalField ccf)
+        {
             writer.WriteStringValue(string.Format("{0};{1};{2};0",
-            cf.ExpectedCategory, (int)cf.FieldIfTrue, (int)cf.FieldIfFalse));
-        else
+            ccf.ExpectedCategory, (int)ccf.FieldIfTrue, (int)ccf.FieldIfFalse));
+        }
+        else if (cf is StatusConditionalField scf)
+        {
             writer.WriteStringValue(string.Format("{0};{1};{2};1",
-            cf.ExpectedStatus, (int)cf.FieldIfTrue, (int)cf.FieldIfFalse));
+            scf.ExpectedStatus, (int)scf.FieldIfTrue, (int)scf.FieldIfFalse));
+        }
+        else
+        {
+            throw new NotSupportedException($"The type {cf.GetType().FullName} is not supported by the ConditionalFieldJsonConverter.");
+        }        
     }
 
-    //public override void Write(
-    //    Utf8JsonWriter writer,
-    //    ConditionalField cf,
-    //    JsonSerializerOptions options) =>
-    //        writer.WriteStringValue(string.Format("{0};{1};{2}",
-    //        cf.ExpectedCategory, (int)cf.FieldIfTrue, (int)cf.FieldIfFalse));
+    
 }
