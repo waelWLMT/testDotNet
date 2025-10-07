@@ -17,25 +17,21 @@ public class ConditionalFieldJsonConverter : JsonConverter<ConditionalField>
             ? CondionalCreteria.Status
             : CondionalCreteria.Category;
 
-       if(condionalCreteria == CondionalCreteria.Category)
-        {
-            return new CategoryConditionalField()
+
+        return condionalCreteria == CondionalCreteria.Category
+            ? new CategoryConditionalField()
             {
                 FieldIfTrue = Enum.Parse<Field>(arr[1]),
                 FieldIfFalse = Enum.Parse<Field>(arr[2]),
                 ExpectedCategory = arr[0]
-            };
-        }
-        else
-        {
-            return new StatusConditionalField()
+            }
+            : new StatusConditionalField()
             {
                 FieldIfTrue = Enum.Parse<Field>(arr[1]),
                 FieldIfFalse = Enum.Parse<Field>(arr[2]),
                 ExpectedStatus = arr[0]
             };
-        }       
-
+       
     }
 
     public override void Write(Utf8JsonWriter writer, ConditionalField cf, JsonSerializerOptions options)
